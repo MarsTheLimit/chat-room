@@ -1,6 +1,7 @@
 const CLIENT_ID = 'JHJYZgNCDTVK7YdD';
 let members = [];
-
+room = 'observable-room';
+document.title = room;
 const drone = new ScaleDrone(CLIENT_ID, {
   data: { // Will be sent out as clientData via events
     name: getRandomName(),
@@ -14,7 +15,7 @@ drone.on('open', error => {
   }
   console.log('Successfully connected to Scaledrone');
 
-  const room = drone.subscribe('observable-room');
+  const room = drone.subscribe(room);
   room.on('open', error => {
     if (error) {
       return console.error(error);
