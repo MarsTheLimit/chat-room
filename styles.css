@@ -87,6 +87,7 @@ button:active {
 
 #messge-display {
 	height: 200px;
+	width: 250px;
 	border: 1px solid black;
 	overflow-y: scroll;
 }
