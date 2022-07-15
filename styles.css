@@ -90,6 +90,12 @@ button:active {
 	width: 250px;
 	border: 1px solid black;
 	overflow-y: scroll;
+	list-style: none;
+	padding: 2px;
+}
+
+#message-display li {
+	marign-bottom: 3px;
 }
 
 /* Characters */
