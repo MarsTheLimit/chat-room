@@ -30,6 +30,8 @@ function getKeyString(x, y) {
   return `${x}x${y}`;
 }
 
+
+
 function createName() {
   const prefix = randomFromArray([
     "COOL",
@@ -125,7 +127,6 @@ function getRandomSafeSpot() {
   const playerNameInput = document.querySelector("#player-name");
   const playerColorButton = document.querySelector("#player-color");
 
-
   function placeCoin() {
     const { x, y } = getRandomSafeSpot();
     const coinRef = firebase.database().ref(`coins/${getKeyString(x, y)}`);
@@ -172,13 +173,44 @@ function getRandomSafeSpot() {
 
   function initGame() {
 
+	
+
     new KeyPressListener("ArrowUp", () => handleArrowPress(0, -1))
     new KeyPressListener("ArrowDown", () => handleArrowPress(0, 1))
     new KeyPressListener("ArrowLeft", () => handleArrowPress(-1, 0))
     new KeyPressListener("ArrowRight", () => handleArrowPress(1, 0))
+	
+	new KeyPressListener("Enter", () => sendMessage())
 
     const allPlayersRef = firebase.database().ref(`players`);
     const allCoinsRef = firebase.database().ref(`coins`);
+	const messagesRef = firebase.database().ref(`messages`);
+	
+	//Chat 
+	function sendMessage() {
+        // get message
+        var message = document.getElementById("chat-input");
+ 
+        // save in database
+        firebase.database().ref("messages").push().set({
+            "sender": document.querySelector("#player-name").value,
+            "message": message.value
+        });
+		message.value = "";
+	}
+	
+	messagesRef.on("child_added", function (snapshot) {
+		var msgDis = document.getElementById("messge-display");
+        var html = "";
+        // give each message a unique ID
+        html += "<li id='message-" + snapshot.key + "'>";
+        html += snapshot.val().sender + ": " + snapshot.val().message;
+        html += "</li>";
+        msgDis.innerHTML += html;
+		msgDis.style.color = "#ffffff";
+		
+		msgDis.scroll({ top: msgDis.scrollHeight, behavior: "smooth"})
+    });
 
     allPlayersRef.on("value", (snapshot) => {
       //Fires whenever a change occurs
@@ -198,6 +230,10 @@ function getRandomSafeSpot() {
     })
     allPlayersRef.on("child_added", (snapshot) => {
       //Fires whenever a new node is added the tree
+	  firebase.database().ref("messages").push().set({
+		"sender": document.querySelector("#player-name").value,
+		"message": "joined the server"
+       });
       const addedPlayer = snapshot.val();
       const characterElement = document.createElement("div");
       characterElement.classList.add("Character", "grid-cell");
@@ -224,11 +260,16 @@ function getRandomSafeSpot() {
       const top = 16 * addedPlayer.y - 4 + "px";
       characterElement.style.transform = `translate3d(${left}, ${top}, 0)`;
       gameContainer.appendChild(characterElement);
+	  allPlayersRef.push
     })
 
 
     //Remove character DOM element after they leave
     allPlayersRef.on("child_removed", (snapshot) => {
+		firebase.database().ref("messages").push().set({
+		"sender": document.querySelector("#player-name").value,
+		"message": "left the server"
+       });
       const removedKey = snapshot.val().id;
       gameContainer.removeChild(playerElements[removedKey]);
       delete playerElements[removedKey];

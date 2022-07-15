@@ -71,6 +71,26 @@ button:active {
   top: 1px;
 }
 
+.chat {
+	position: fixed;
+    bottom: 0;
+    left: 0;
+	margin: 5px;
+}
+
+#chat-input {
+	width: 250px;
+	height: 20px;
+	text-transform: none;
+	font-size: .9rem;
+}
+
+#messge-display {
+	height: 200px;
+	border: 1px solid black;
+	overflow-y: scroll;
+}
+
 /* Characters */
 .grid-cell {
   position: absolute;
