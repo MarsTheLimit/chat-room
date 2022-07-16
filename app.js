@@ -20,7 +20,7 @@ const mapData = {
 };
 
 // Options for Player Colors... these are in the same order as our sprite sheet
-const playerColors = ["blue", "red", "orange", "yellow", "green", "purple"];
+const playerColors = ["blue", "red", "orange", "yellow", "green", "purple", "gray"];
 
 //Misc Helpers
 function randomFromArray(array) {
@@ -122,6 +122,7 @@ function getRandomSafeSpot() {
   let playerElements = {};
   let coins = {};
   let coinElements = {};
+  let topPlayers = {};
 
   const gameContainer = document.querySelector(".game-container");
   const playerNameInput = document.querySelector("#player-name");
@@ -173,8 +174,6 @@ function getRandomSafeSpot() {
 
   function initGame() {
 
-	
-
     new KeyPressListener("ArrowUp", () => handleArrowPress(0, -1))
     new KeyPressListener("ArrowDown", () => handleArrowPress(0, 1))
     new KeyPressListener("ArrowLeft", () => handleArrowPress(-1, 0))
@@ -185,6 +184,9 @@ function getRandomSafeSpot() {
     const allPlayersRef = firebase.database().ref(`players`);
     const allCoinsRef = firebase.database().ref(`coins`);
 	const messagesRef = firebase.database().ref(`messages`);
+	
+	
+	
 	
 	//Chat 
 	function sendMessage() {
@@ -208,7 +210,6 @@ function getRandomSafeSpot() {
         html += "</li>";
         msgDis.innerHTML += html;
 		msgDis.style.color = "#ffffff";
-		
 		msgDis.scroll({ top: msgDis.scrollHeight, behavior: "smooth"})
     });
 
@@ -228,12 +229,9 @@ function getRandomSafeSpot() {
         el.style.transform = `translate3d(${left}, ${top}, 0)`;
       })
     })
+	
     allPlayersRef.on("child_added", (snapshot) => {
       //Fires whenever a new node is added the tree
-	  firebase.database().ref("messages").push().set({
-		"sender": document.querySelector("#player-name").value,
-		"message": "joined the server"
-       });
       const addedPlayer = snapshot.val();
       const characterElement = document.createElement("div");
       characterElement.classList.add("Character", "grid-cell");
@@ -251,7 +249,7 @@ function getRandomSafeSpot() {
       `);
       playerElements[addedPlayer.id] = characterElement;
 
-      //Fill in some initial state
+      //Fill in some initial states
       characterElement.querySelector(".Character_name").innerText = addedPlayer.name;
       characterElement.querySelector(".Character_coins").innerText = addedPlayer.coins;
       characterElement.setAttribute("data-color", addedPlayer.color);
@@ -260,16 +258,11 @@ function getRandomSafeSpot() {
       const top = 16 * addedPlayer.y - 4 + "px";
       characterElement.style.transform = `translate3d(${left}, ${top}, 0)`;
       gameContainer.appendChild(characterElement);
-	  allPlayersRef.push
     })
 
 
     //Remove character DOM element after they leave
     allPlayersRef.on("child_removed", (snapshot) => {
-		firebase.database().ref("messages").push().set({
-		"sender": document.querySelector("#player-name").value,
-		"message": "left the server"
-       });
       const removedKey = snapshot.val().id;
       gameContainer.removeChild(playerElements[removedKey]);
       delete playerElements[removedKey];
@@ -335,9 +328,9 @@ function getRandomSafeSpot() {
     placeCoin();
 
   }
+	
 
   firebase.auth().onAuthStateChanged((user) => {
-    console.log(user)
     if (user) {
       //You're logged in!
       playerId = user.uid;
@@ -358,7 +351,7 @@ function getRandomSafeSpot() {
         y,
         coins: 0,
       })
-
+	  
       //Remove me from Firebase when I diconnect
       playerRef.onDisconnect().remove();
 

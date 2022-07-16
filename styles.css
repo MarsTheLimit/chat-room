@@ -145,6 +145,9 @@ button:active {
 .Character[data-color="purple"] .Character_sprite {
   background-position-y: -80px;
 }
+.Character[data-color="gray"] .Character_sprite {
+  background-position-y: -96px;
+}
 .Character_shadow {
   background: url('images/shadow.png') no-repeat no-repeat;
 }
